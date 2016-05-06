@@ -1,0 +1,622 @@
+{
+    "flashicon": "icons\/EventWatcher.png",
+    "default_icon": "EventWatcher.png",
+    "state_icons":[
+        "EventWatcher_0.png",
+        "EventWatcher_25.png",
+        "EventWatcher_50.png",
+        "EventWatcher_75.png",
+        "EventWatcher_100.png",
+        "EventWatcher_125.png",
+        "EventWatcher_150.png",
+        "EventWatcher_175.png"
+    ],
+    "DisplayStatus": {
+        "Service": "urn:akbooer-com:serviceId:EventWatcher1",
+        "Variable": "IconSet",
+        "MinValue": "0",
+        "MaxValue": "4"
+    },
+	"Tabs": [
+		{
+			"Label": {
+				"lang_tag": "tabname_control",
+				"text": "Control"
+			},
+			"Position": "0",
+			"TabType": "flash",
+			"ControlGroup":[
+				{
+					"id": "1",
+					"scenegroup": "1"
+				}
+			],
+			"SceneGroup":[
+				{
+					"id": "1",
+					"top": "1.5",
+					"left": "0.25",
+					"x": "1.5",
+					"y": "2"
+				}
+			],
+			"Control": [
+				{
+					"ControlGroup":"1",
+					"ControlType": "label",
+					"top": "0",
+					"left": "0",
+					"Label": {
+						"lang_tag": "timestamp",
+						"text": "Last Event"
+					},
+					"Display": {
+						"Top": 40,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"1",
+					"ControlType": "variable",
+					"top": "1",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "Timestamp",
+						"Top": 40,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"2",
+					"ControlType": "label",
+					"top": "0",
+					"left": "0",
+					"Label": {
+						"lang_tag": "showavail",
+						"text": "Memory Avail (kB)"
+					},
+					"Display": {
+						"Top": 60,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"2",
+					"ControlType": "variable",
+					"top": "1",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "MemAvail",
+						"Top": 60,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"2",
+					"ControlType": "label",
+					"top": "2",
+					"left": "0",
+					"Label": {
+						"lang_tag": "showfree",
+						"text": "Memory Free (kB)"
+					},
+					"Display": {
+						"Top": 80,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"2",
+					"ControlType": "variable",
+					"top": "3",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "MemFree",
+						"Top":  80,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"2",
+					"ControlType": "label",
+					"top": "4",
+					"left": "0",
+					"Label": {
+						"lang_tag": "showused",
+						"text": "App Memory Used (kB)"
+					},
+					"Display": {
+						"Top": 100,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"2",
+					"ControlType": "variable",
+					"top": "5",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "AppMemoryUsed",
+						"Top": 100,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"2",
+					"ControlType": "label",
+					"top": "4",
+					"left": "0",
+					"Label": {
+						"lang_tag": "showboot",
+						"text": "Last Reboot"
+					},
+					"Display": {
+						"Top": 120,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"2",
+					"ControlType": "variable",
+					"top": "5",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "LastReboot",
+						"Top": 120,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"2",
+					"ControlType": "label",
+					"top": "4",
+					"left": "0",
+					"Label": {
+						"lang_tag": "showrestart",
+						"text": "Last Luup Restart"
+					},
+					"Display": {
+						"Top": 140,
+						"Left": 50,
+						"Width": 75,
+						"Height": 20
+					}
+				},  
+				{
+					"ControlGroup":"2",
+					"ControlType": "variable",
+					"top": "5",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "LuupRestart",
+						"Top": 140,
+						"Left": 200,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "links",
+					"text": "Links to reports:</a>"
+				},
+				"top": "0",
+				"Display": {
+					"Top": 180,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "log",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=log' target='_blank'>Variable and Event Log</a>"
+				},
+				"top": "2",
+				"Display": {
+					"Top": 200,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "watched",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=watch' target='_blank'>Watched Variables</a>"
+				},
+				"top": "4",
+				"Display": {
+					"Top": 220,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "devices",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=devices' target='_blank'>Devices</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 240,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "scenes",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=scenes' target='_blank'>Scenes</a>"
+				},
+				"top": "4",
+				"Display": {
+					"Top": 260,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "2",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "switches",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=switches' target='_blank'>Switches and Dimmers</a>"
+				},
+				"top": "5",
+				"Display": {
+					"Top": 280,
+					"Left": 50,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "3",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "security",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=security' target='_blank'>Security</a>"
+				},
+				"top": "0",
+				"Display": {
+					"Top": 200,
+					"Left": 220,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "3",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "environment",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=environment' target='_blank'>Environment</a>"
+				},
+				"top": "1",
+				"Display": {
+					"Top": 220,
+					"Left": 220,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "3",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "battery",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=battery' target='_blank'>Batteries</a>"
+				},
+				"top": "2",
+				"Display": {
+					"Top": 240,
+					"Left": 220,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "3",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "treemap",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=treemap' target='_blank'>Room Map</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 260,
+					"Left": 220,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "4",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "memory",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=memory' target='_blank'>Vera Memory</a>"
+				},
+				"top": "0",
+				"Display": {
+					"Top": 200,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "4",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "appmemory",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=app' target='_blank'>EventWatcher Memory</a>"
+				},
+				"top": "1",
+				"Display": {
+					"Top": 220,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "4",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "cpu",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=cpu' target='_blank'>Vera CPU</a>"
+				},
+				"top": "2",
+				"Display": {
+					"Top": 240,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "4",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "system",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=system' target='_blank'>System Stats</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 260,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "5",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "htmlhelp",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&' target='_blank'>HTML Request Syntax</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 40,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "5",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "codes",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=codes' target='_blank'>Category Codes</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 60,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			},
+			{
+				"ControlGroup": "5",
+				"ControlType": "label",
+				"Label": {
+					"lang_tag": "geochart",
+					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=geochart' target='_blank'>Where am I?</a>"
+				},
+				"top": "3",
+				"Display": {
+					"Top": 80,
+					"Left": 390,
+					"Width": 220,
+					"Height": 20
+				}
+			}
+			]
+		},
+		{
+			"Label": {
+				"lang_tag": "advanced",
+				"text": "Advanced"
+			},
+			"Position": "2",
+			"TabType": "javascript",
+			"ScriptName": "shared.js",
+			"Function": "advanced_device"
+		},
+		{
+			"Label": {
+				"lang_tag": "notifications",
+				"text": "Notifications"
+			},
+			"Position": "3",
+			"TabType": "javascript",
+			"ScriptName": "shared.js",
+			"Function": "device_notifications"
+		}
+	],
+"eventList2": [
+        {
+            "id": 1,
+            "label": {
+                "lang_tag": "error_led_on_or_off",
+                "text": "Error LED is on or off"
+            },
+            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
+	    "norepeat": "1",
+            "argumentList": [
+               {
+                    "id": 1,
+                    "dataType": "boolean",
+                    "defaultValue": "1",
+                    "allowedValueList": [
+                        {
+                            "Off": "0",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_error_led_off",
+                                "text": "Error LED is off"
+                            }
+                        },
+                        {
+                            "On": "255",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_error_led_on",
+                                "text": "Error LED is on"
+                            }
+                        }
+                    ],
+                    "name": "ErrorLED",
+                    "comparisson": "=",
+                    "prefix": {
+                        "lang_tag": "on_or_off",
+                        "text": "On or Off"
+                    },
+                    "suffix": {}
+                }
+             ]
+        },
+        {
+            "id": 2,
+            "label": {
+                "lang_tag": "network_led_on_or_off",
+                "text": "Network LED is on or off"
+            },
+            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
+	    "norepeat": "1",
+            "argumentList": [
+               {
+                    "id": 1,
+                    "dataType": "boolean",
+                    "defaultValue": "1",
+                    "allowedValueList": [
+                        {
+                            "Off": "0",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_network_led_off",
+                                "text": "Network LED is off"
+                            }
+                        },
+                        {
+                            "On": "255",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_network_led_on",
+                                "text": "Network LED is on"
+                            }
+                        }
+                    ],
+                    "name": "NetworkLED",
+                    "comparisson": "=",
+                    "prefix": {
+                        "lang_tag": "on_or_off",
+                        "text": "On or Off"
+                    },
+                    "suffix": {}
+                }
+             ]
+        },
+        {
+            "id": 3,
+            "label": {
+                "lang_tag": "zwave_led_on_or_off",
+                "text": "Zwave LED is on or off"
+            },
+            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
+	    "norepeat": "1",
+            "argumentList": [
+               {
+                    "id": 1,
+                    "dataType": "boolean",
+                    "defaultValue": "1",
+                    "allowedValueList": [
+                        {
+                            "Off": "0",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_zwave_led_off",
+                                "text": "Zwave LED is off"
+                            }
+                        },
+                        {
+                            "On": "255",
+                            "HumanFriendlyText": {
+                                "lang_tag": "hft_zwave_led_on",
+                                "text": "Zwave LED is on"
+                            }
+                        }
+                    ],
+                    "name": "ZwaveLED",
+                    "comparisson": "=",
+                    "prefix": {
+                        "lang_tag": "on_or_off",
+                        "text": "On or Off"
+                    },
+                    "suffix": {}
+                }
+             ]
+        }
+   ],
+	"DeviceType": "urn:akbooer-com:device:EventWatcher:1"
+}

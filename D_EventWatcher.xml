@@ -9,8 +9,8 @@
     <staticJson>D_EventWatcher.json</staticJson> 
     <friendlyName>Event Watcher</friendlyName>
     <manufacturer></manufacturer>
-    <manufacturerURL></manufacturerURL>
-    <modelDescription>Local Alternate Event Server</modelDescription>
+    <manufacturerURL>https://github.com/akbooer/EventWatcher</manufacturerURL>
+    <modelDescription></modelDescription>
     <modelName></modelName>
     <modelNumber></modelNumber>
     <UDN>uuid:000000000000</UDN>

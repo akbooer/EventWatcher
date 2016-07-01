@@ -1,8 +1,12 @@
-module ("L_EventWatcher", package.seeall)
+local ABOUT = {
+  NAME          = "EventWatcher",
+  VERSION       = "2016.07.01",
+  DESCRIPTION   = "EventWatcher - variable and event reporting",
+  AUTHOR        = "@akbooer",
+  COPYRIGHT     = "(c) 2013-2016 AKBooer",
+  DOCUMENTATION = "https://github.com/akbooer/EventWatcher",
+}
 
-local version = "2015.03.27  @akbooer"   
-
-UI7 =   luup.version_major == 7
 
 ------------------------------------------------------------------------
 --
@@ -11,30 +15,17 @@ UI7 =   luup.version_major == 7
 -- 2) watches selected device categories and logs key variable changes
 -- 3) generates reports of current device variable values and time last changed, etc.
 -- 
--- as of 2013-11-24 
--- Plain files replaced by dynamic HTTP pages to give much greater functionality.
--- These pages can be served on-demand in reponse to an HTTP request: 
--- URL:3480/data_request?id=lr_eventWatcher&report=devices 
--- no filespace, on-demand (not polled), interactive, tables and graphs.
--- requests work over the internet via MiOS secure servers (unlike dataMine)
---
--- as of 2013-11-29
--- all WATCH events are stored in a one-day long buffer, available for different types of reporting
--- ...including tables and graphs
--- 
--- 2013-12-05  Release 2
--- see: http://forum.micasaverde.com/index.php/topic,16984.msg139085.html#msg139085
--- 
--- Alternate Event Server - running on Vera - functionality originally from @TOP320
--- see: http://forum.micasaverde.com/index.php/topic,9525.msg91855.html#msg91855
---
--- 2014.07.18  added optional "extras" file for random variables.
--- 2014.11.17  added option "variable" parameter to plot command to distinguish between multiple device variables
---
--- 2015.01.27  added optional "exclude" file for sundry variable not of interest, thanks to @joek
--- see: http://forum.micasaverde.com/index.php/topic,16984.msg216144.html#msg216144
--- 2015.01.30  add underscoe to valid variable name parsing in Extras and Exclude files, thanks to @joek
--- see: http://forum.micasaverde.com/index.php/topic,30428.msg216970.html#msg216970
+
+--  2016
+
+-- TODO: fix Alternate Event Server for UI7 ???
+
+-- 2016.07.01  update set_failure for UI5/7 compatibility
+--             Use fully qualified domain name, not just IP address (suggested by @Les F)
+--             see: http://forum.micasaverde.com/index.php/topic,37627.0.html
+--             ALSO, extra door and HVAC watches (suggested by @johnes)
+--             see: http://forum.micasaverde.com/index.php/topic,37514.0.html
+
 --[[
 UI5:
 Vera will send the event as a standard HTTPS (secure) GET to yourserver/alert 
@@ -71,7 +62,6 @@ local history = {}		-- cache for system statistics
 local LuupRestart = os.time()			-- restart time
 
 local socket 	= require "socket" 
-local http   	= require "socket.http"
 local ssl    	= require "ssl"
 local url	 	  = require "socket.url"
 local library	= require "L_EventWatcher2"
@@ -81,16 +71,16 @@ local gviz  	= library.gviz()
 local json  	= library.json() 
 
 
-local AlertType = {"Image", "Video", "Trigger", "Variable", "Logon", "Gateway Connected", 
-			 	"System Error", "Validate Email", "Validate SMS", "System Message"}
+--local AlertType = {"Image", "Video", "Trigger", "Variable", "Logon", "Gateway Connected", 
+--			 	"System Error", "Validate Email", "Validate SMS", "System Message"}
  
-local SourceType = {"User", "Timer", "Trigger", "Variable"}
+--local SourceType = {"User", "Timer", "Trigger", "Variable"}
  
-local FileFormat = {"JPEG", "MJPEG", "MP4"}
+--local FileFormat = {"JPEG", "MJPEG", "MP4"}
 
 
 local EventWatcherSID	= "urn:akbooer-com:serviceId:EventWatcher1"
-local HTTPsData			= "HTTPsData"
+--local HTTPsData			= "HTTPsData"
 
 ---	
 -- 'global' program variables assigned in init()
@@ -163,6 +153,12 @@ local function uiVar (name, default, lower, upper)
 end
 
 
+-- UI7 return status : {0 = OK, 1 = Device config error, 2 = Authorization error}
+local function set_failure (status)
+  if (luup.version_major < 7) then status = status ~= 0 end        -- fix UI5 status type
+  luup.set_failure(status)
+end
+
 ------------------------------------------------------------------------
 --
 -- Utility routines
@@ -230,7 +226,8 @@ function eventBlog (e)
 end
 
 -- blog watched variables
-function watchBlog (lul_device, lul_service, lul_variable, lul_value_old, lul_value_new)
+--function watchBlog (lul_device, lul_service, lul_variable, lul_value_old, lul_value_new)
+function watchBlog (lul_device, _, lul_variable, _, lul_value_new)
 	event (nil, lul_device, lul_variable, lul_value_new) 
 end
 
@@ -257,7 +254,7 @@ local SSL_params = {
 
 local http_response
 
-if UI7 then
+if luup.version_major == 7 then
   http_response = [[
 HTTP/1.1 200 OK
 Content-Length: 27
@@ -284,7 +281,7 @@ end
 
 
 local function accept_client()
-  local client, rc, error, params
+  local client, rc, error
 
   client = Server:accept()
   if client == nil then return end
@@ -333,9 +330,9 @@ function pollClients()
 			if data then debug (ip_port .. ': ' .. data) end
 		until not data	        -- consume remaining lines
       
-    local bytes_sent, error = client:send(http_response)
+    local bytes_sent, errmsg = client:send(http_response)
     if not bytes_sent then
-        log(ip_port .. " error sending response: " .. tostring(error))
+        log(ip_port .. " error sending response: " .. tostring(errmsg))
     end
 
     client:close()
@@ -348,7 +345,8 @@ end
 local function syslog_server (ip_and_port, tag, hostname)
   local sock = socket.udp()
   local facility = 1    -- 'user'
-  local emergency, alert, critical, error, warning, notice, info, debug = 0,1,2,3,4,5,6,7
+--  local emergency, alert, critical, error, warning, notice, info, debug = 0,1,2,3,4,5,6,7
+  local info = 6
   local ip, port = ip_and_port: match "^(%d+%.%d+%.%d+%.%d+):(%d+)$"
   if not ip or not port then return nil, "invalid IP or PORT" end
   local serialNo = luup.pk_accesspoint
@@ -382,7 +380,7 @@ local Vsid = "urn:upnp-org:serviceId:VSwitch1"
 local function classTable (sym, srv, var, lbl) 				-- table constructor
 	return {symbol = sym, service = srv, variable = var, label = lbl }
 end
-
+--[[
 local HVAC = {
   srv = {
     "urn:upnp-org:serviceId:HVAC_UserOperatingMode1", 
@@ -402,6 +400,31 @@ local HVAC = {
     "ModeState",
     "Mode",
   } }
+]]
+
+local HVAC_Services = {
+  "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
+  "urn:upnp-org:serviceId:TemperatureSetpoint1_Heat",
+  "urn:upnp-org:serviceId:TemperatureSetpoint1_Cool",
+  "urn:upnp-org:serviceId:TemperatureSensor1",
+  "urn:micasaverde-com:serviceId:HVAC_OperatingState1",
+  "urn:upnp-org:serviceId:HVAC_UserOperatingMode1",
+  "urn:upnp-org:serviceId:HVAC_FanOperatingMode1",
+  "urn:upnp-org:serviceId:TemperatureSetpoint1",
+  "urn:upnp-org:serviceId:TemperatureSensor1",
+}
+
+local HVAC_Variables = {
+  "ModeStatus",
+  "CurrentSetpoint",
+  "CurrentSetpoint",
+  "CurrentTemperature",
+  "ModeState",
+  "EnergyModeStatus",
+  "FanStatus",
+  "CurrentSetpoint",
+  "CurrentTemperature",
+}
 
 local Meter_Services = {
   "urn:micasaverde-com:serviceId:EnergyMetering1",  
@@ -437,7 +460,9 @@ local AV_Variables = {
   "Volume",
 }
 
-local DLock_Services = {
+
+--[[
+  local DLock_Services = {
   Dsid, 
   Dsid,
 }
@@ -446,7 +471,16 @@ local DLock_Variables = {
   "Status",
   "sl_UserCode",
 }
+--]]
 
+local Door_Services = {Dsid, Dsid, Dsid, Dsid}
+
+local Door_Variables = {
+  "Status",
+  "sl_UserCode",
+  "sl_PinFailed",
+  "sl_LockButton",
+}
 local MV_Switch_Services = {Vsid, Msid, Msid, Msid, Msid, Msid, Msid, Msid, Msid}
 
 local MV_Switch_Variables = {"Status", "Status1", "Status2", "Status3", "Status4", "Status5", "Status6", "Status7", "Status8"}
@@ -457,10 +491,11 @@ local classes = {  -- table of the different types of devices and their various 
 	classTable ("X", "urn:upnp-org:serviceId:SwitchPower1",				    "Status",	            "DIMMABLE_LIGHT"),   -- 2		
 	classTable ("X", "urn:upnp-org:serviceId:SwitchPower1", 			    "Status",	            "SWITCH"),           -- 3	
 	classTable ("S", "urn:micasaverde-com:serviceId:SecuritySensor1",	"Tripped",            "SECURITY_SENSOR"),  -- 4
-	classTable ("K",	HVAC.srv,                                        HVAC.var,            "HVAC"),             -- 5
+	classTable ("K",	HVAC_Services,                                   HVAC_Variables,       "HVAC"),             -- 5
 	classTable ("C",  nil,                                             nil,                 "CAMERA"),           -- 6
-	classTable ("D",  DLock_Services,                                  DLock_Variables,     "DOOR_LOCK"),        -- 7
-	classTable ("W", "urn:upnp-org:serviceId:Dimming1",               "LoadLevelStatus",    "WINDOW_COV"),       -- 8
+--	classTable ("D",  DLock_Services,                                  DLock_Variables,     "DOOR_LOCK"),        -- 7
+  classTable ("D",  Door_Services,                                   Door_Variables,      "DOOR_LOCK"),        -- 7
+  classTable ("W", "urn:upnp-org:serviceId:Dimming1",               "LoadLevelStatus",    "WINDOW_COV"),       -- 8
 	classTable ("R",	nil,                                             nil,                 "REMOTE_CONTROL"),   -- 9
 	classTable ("I",  nil,                                             nil,                 "IR_TX"),            -- 10
 	classTable ("O",  nil,                                             nil,	                "GENERIC_IO"),       -- 11
@@ -508,7 +543,7 @@ local function codeBlog (p)
     end
   end
   local chart = gviz.Table()
-  local options = {title = title, height = options.height or 700, width = options.width or 800} 
+  options = {title = title, height = options.height or 700, width = options.width or 800} 
   return chart.draw (data, options) 
 end
 
@@ -541,7 +576,7 @@ local function enviroBlog (p)
 		end
 	end
 	local chart = gviz.Table()
-	local options = {title = title, height = options.height or 500, width = options.width or 600}	
+	options = {title = title, height = options.height or 500, width = options.width or 600}	
 	return chart.draw (data, options)	
 end
 
@@ -570,7 +605,7 @@ local function securityBlog (p)
   end
   data.sort {column = 1, desc = true}
   local chart = gviz.Table()
-  local options = {title = title, height = options.height or 500, width = options.width or 600} 
+  options = {title = title, height = options.height or 500, width = options.width or 600} 
   return chart.draw (data, options) 
 end
 
@@ -598,7 +633,7 @@ local function deviceBlog (p)
     end
     data.sort (1)
 	local chart = gviz.Table()
-	local options = {title = 'Device List', height = options.height or 800, width = options.width or 750}	
+	options = {title = 'Device List', height = options.height or 800, width = options.width or 750}	
 	return chart.draw (data, options)	
 end
 
@@ -779,11 +814,11 @@ local function getSystemFile (fname)
   return line
 end
 
-local function getLED (x) 
-  local  path  = "/sys/devices/platform/leds-gpio/leds/veralite:%s/brightness"
-  local  value = tonumber (getSystemFile (path:format (x)))
-  return value or 0
-end
+--local function getLED (x) 
+--  local  path  = "/sys/devices/platform/leds-gpio/leds/veralite:%s/brightness"
+--  local  value = tonumber (getSystemFile (path:format (x)))
+--  return value or 0
+--end
 
 local function getSysinfo ()
 	local x
@@ -791,37 +826,42 @@ local function getSysinfo ()
 
 	x = getSystemFile "/proc/meminfo"									-- memory use
 	for a,b in x:gmatch '(%w+):%s+(%d+)' do	info[a] = {val = b, class = 'memory'} end
-	info.MemUsed  = {val = info.MemTotal.val - info.MemFree.val, class = 'memory'} 
-	info.MemAvail = {val = info.Cached.val   + info.MemFree.val, class = 'memory'}
+  if info.MemTotal and info.MemFree and info.Cached then
+    info.MemUsed  = {val = info.MemTotal.val - info.MemFree.val, class = 'memory'} 
+    info.MemAvail = {val = info.Cached.val   + info.MemFree.val, class = 'memory'}
+  else
+    info.MemUsed  = 0
+    info.MemAvail = 0
+  end
 	
 	local n = 0
 	x = getSystemFile "/proc/loadavg"									-- CPU use
 	local label = {"cpuLoad01", "cpuLoad05", "cpuLoad15", "procRunning","procTotal"}
 	for y in x:gmatch("[%d.]+") do n = n+1; if label[n] then info[label[n]] = {val = y, class = 'cpu'}; end; end
 	
-	local n = 0
+	n = 0
 	x = getSystemFile "/proc/uptime"									-- process uptime
-	local label = {"uptimeTotal", "uptimeIdle"}
+	label = {"uptimeTotal", "uptimeIdle"}
 	for y in x:gmatch("[%d.]+") do n = n+1; if label[n] then info[label[n]] = {val = y, class = 'time'}; end; end
 	info.LuupRestart = {val = os.date("%d-%b-%Y %X", LuupRestart), class = 'time'}
 	local now = os.time()
 	if info.uptimeTotal then info.VeraReboot = {val = os.date("%d-%b-%Y %X", now - info.uptimeTotal.val), class = 'time'} end
   
-  local power = getLED "blue:power"                 -- LED status lights
-  local zwave = getLED "orange:zwave"
-  local lan   = getLED "yellow:lan"                 -- it's actually green
-  local error = getLED "red:error"
-  info.ZwaveLED     = {val = zwave, class = 'system'}
-  info.NetworkLED   = {val = lan,   class = 'system'}
-  info.ErrorLED     = {val = error, class = 'system'}
-  info.VeraLiteLEDS = {val = error + 2*(lan + 2*(zwave + 2*power)) / 255, class = 'system'}     -- encode into one variable  
+--  local power = getLED "blue:power"                 -- LED status lights
+--  local zwave = getLED "orange:zwave"
+--  local lan   = getLED "yellow:lan"                 -- it's actually green
+--  local error = getLED "red:error"
+--  info.ZwaveLED     = {val = zwave, class = 'system'}
+--  info.NetworkLED   = {val = lan,   class = 'system'}
+--  info.ErrorLED     = {val = error, class = 'system'}
+--  info.VeraLiteLEDS = {val = error + 2*(lan + 2*(zwave + 2*power)) / 255, class = 'system'}     -- encode into one variable  
   
 	return info, now
 end
 	
 local function sysinfoBlog (p)					-- blog to web, three options: sysinfo table, cpu or memory plots 	
 	local options = p.options
-	local systemInfo, now = getSysinfo() 		-- useful info
+	local systemInfo = getSysinfo() 		  -- useful info
 	local data = gviz.DataTable ()
 	local chart
 	local title = "System Information"
@@ -851,7 +891,7 @@ local function sysinfoBlog (p)					-- blog to web, three options: sysinfo table,
 		data.sort (1)
 		chart = gviz.AreaChart()
 	end
-	local options = {title = title, legend = 'none', height = options.height or 600}	
+	options = {title = title, legend = 'none', height = options.height or 600}	
 	return chart.draw (data, options)	
 end
 
@@ -878,7 +918,7 @@ local function batteryBlog (p)
 	end
     data.sort (1)
 	local chart = gviz.Table()
-	local options = {title = 'Battery Levels', height = options.height or 600, width = options.width or 500}	
+	options = {title = 'Battery Levels', height = options.height or 600, width = options.width or 500}	
 
 	return chart.draw (data, options)	
 end
@@ -948,15 +988,15 @@ local function switches (p)
   end
   local tree = TreeTable {data = list, root = "Switches and Dimmers", branches = {"room"}, leaves = {} }
   local chart = gviz.TreeMap()
-  local options = {
-            height = options.height or 500, 
-            width = options.width, 
-            maxDepth = 2,
-            minColorValue = 0, 
-            maxColorValue = 1,
-            minColor = "DarkGray", 
-            maxColor = "Gold",
-          } 
+  options = {
+    height = options.height or 500, 
+    width = options.width, 
+    maxDepth = 2,
+    minColorValue = 0, 
+    maxColorValue = 1,
+    minColor = "DarkGray", 
+    maxColor = "Gold",
+  } 
   return chart.draw (tree, options) 
 end
 
@@ -968,7 +1008,7 @@ local function treeMap (p)
     local watch = 0
     if watchedDevice[deviceNo] then watch = 1 end 
     local dtype = ((d.device_type or ''): match ":(%w*):%d+$") or ''
-    local room = roomName(d.room_num)
+--    local room = roomName(d.room_num)
     local name = ("[%03d] %s"): format (deviceNo, d.description or '?')
     list[#list+1] = {
       _label = name,
@@ -978,7 +1018,7 @@ local function treeMap (p)
   end
   local tree = TreeTable {data = list, root = "Watched Devices", branches = {"room"}, leaves = {"type"} }
   local chart = gviz.TreeMap()
-  local options = {
+  options = {
             height = options.height or 500, 
             width = options.width, 
             maxDepth = 2,
@@ -1049,7 +1089,12 @@ local function logBlog (p)		 	-- called by both 'log' and 'events' keywords
 	end
 	data.sort {column = 1, desc = true}		-- reverse time order for table display
 	local chart = gviz.Table()
-	local options = {title = 'Event and Variable Watch log', legend = 'none', height = options.height or 700, width = options.width or 1000}	
+	options = {
+    title = 'Event and Variable Watch log', 
+    legend = 'none', 
+    height = options.height or 700, 
+    width = options.width or 1000
+  }	
 	return chart.draw (data, options)	
 end
 
@@ -1067,7 +1112,7 @@ local function plotAnything (p)
 	end
 	data.sort (1)
 	local chart = gviz.AreaChart()
-	local options = {title = devName (device), legend = 'none', height = options.height or 600, width = options.width}	
+	options = {title = devName (device), legend = 'none', height = options.height or 600, width = options.width}	
 	return chart.draw (data, options)	
 end
 
@@ -1180,18 +1225,18 @@ function sysinfoPulse ()
   set ("MemFree",  free)
 	set ("CpuLoad05", cpu)
 
-  local LED = systemInfo.VeraLiteLEDS.val
-	set ("VeraLiteLEDS", LED)	
-	set ("IconSet", LED % 8)     -- only use lower three bits of status (ie. ignore powerlight) 
+--  local LED = systemInfo.VeraLiteLEDS.val
+--	set ("VeraLiteLEDS", LED)	
+--	set ("IconSet", LED % 8)     -- only use lower three bits of status (ie. ignore powerlight) 
 
-  set ("ZwaveLED",   systemInfo.ZwaveLED.val)
-  set ("NetworkLED", systemInfo.NetworkLED.val)
-  set ("ErrorLED",   systemInfo.ErrorLED.val)
+--  set ("ZwaveLED",   systemInfo.ZwaveLED.val)
+--  set ("NetworkLED", systemInfo.NetworkLED.val)
+--  set ("ErrorLED",   systemInfo.ErrorLED.val)
 	
 	collectgarbage ()
 end
 
-function AKB_eventWatcher (lul_request, lul_parameters, lul_outputformat)
+function AKB_eventWatcher (_, lul_parameters)
     local html, content
     local p, status = cli.parse (lul_parameters)
 	local reports = {devices = deviceBlog, battery = batteryBlog, batteries = batteryBlog, scenes = sceneBlog, 
@@ -1221,16 +1266,37 @@ function AKB_eventWatcher (lul_request, lul_parameters, lul_outputformat)
         html = table.concat{"invalid variable syntax: '", a.variable, "'"}
       end
     end
-		local t = (os.clock () - t) * 1e3
+		t = (os.clock () - t) * 1e3
 		debug (("request = %s, CPU = %.3f mS"): format (json.encode(p), t))
 	end
 	return html
 end
 
+-- convert fully qualified domain name (perhaps) into IP
+local function dns_translate (addr)
+  local info = ''
+  local generic = "^(.+):(%d+)$"
+  local numeric = "^%d+%.%d+%.%d+%.%d+$"
+  local a, port = addr: match (generic)
+  if port then
+    if a: match (numeric) then
+      info = addr                 -- all numeric, return unchanged
+    else
+      local ip, msg = socket.dns.toip
+      if ip then
+        info = ip .. ':' .. port
+      else
+        log ("DNS lookup for SYSLOG failed: " .. msg)
+      end
+    end
+  end
+  return info
+end
+
 
 function init (lul_device)
 	log 'starting...'
-	set ('Version', version)							-- save code version number in UI variable
+	set ('Version', ABOUT.VERSION: sub(3,-1))							-- save code version number in UI variable
   set ('LuupRestart', os.date("%d-%b-%Y %X", LuupRestart))
 
   local uptime = ((getSystemFile "/proc/uptime"): match "%d+") or LuupRestart
@@ -1251,7 +1317,7 @@ function init (lul_device)
   extrasFile              = uiVar ("ExtraVariablesFile",   "")     -- list of extra variables to watch
   excludeFile             = uiVar ("ExcludeVariablesFile", "")     -- list of extra variables to exclude
       
-	gviz.setKey "|itsd>#iuuqt;00xxx/hpphmf/dpn0ktbqj#|ttfuPoMpbeDbmmcbdl|eEbubUbcmf|xDibsuXsbqqfs|uuzqf>#ufyu0kbwbtdsjqu#|hhpphmf|wwjtvbmj{bujpo"
+--	gviz.setKey "|itsd>#iuuqt;00xxx/hpphmf/dpn0ktbqj#|ttfuPoMpbeDbmmcbdl|eEbubUbcmf|xDibsuXsbqqfs|uuzqf>#ufyu0kbwbtdsjqu#|hhpphmf|wwjtvbmj{bujpo"
 
 	log 'defining CLI...'
 	cli = cli.parser "&report=devices&width=1000"
@@ -1272,6 +1338,7 @@ function init (lul_device)
 		symbol[devNo] = classes[c].symbol			-- create symbol lookup table
 	end
 	
+  syslogInfo = dns_translate (syslogInfo)
   if syslogInfo ~= '' then
 	  log 'Starting UDP syslog service...'	  
     local err
@@ -1291,7 +1358,8 @@ function init (lul_device)
 
 	luup.register_handler ("AKB_eventWatcher", "EventWatcher")
 	log "...initialised"
-	return true
+  set_failure (0)
+	return true, "OK", ABOUT.NAME
 end
 
 ----------

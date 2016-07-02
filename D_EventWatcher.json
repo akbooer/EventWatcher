@@ -1,22 +1,6 @@
 {
-    "flashicon": "icons\/EventWatcher.png",
-    "default_icon": "EventWatcher.png",
-    "state_icons":[
-        "EventWatcher_0.png",
-        "EventWatcher_25.png",
-        "EventWatcher_50.png",
-        "EventWatcher_75.png",
-        "EventWatcher_100.png",
-        "EventWatcher_125.png",
-        "EventWatcher_150.png",
-        "EventWatcher_175.png"
-    ],
-    "DisplayStatus": {
-        "Service": "urn:akbooer-com:serviceId:EventWatcher1",
-        "Variable": "IconSet",
-        "MinValue": "0",
-        "MaxValue": "4"
-    },
+    "flashicon": "http://raw.githubusercontent.com/akbooer/EventWatcher/master/icons/EventWatcher.png",
+    "default_icon": "http://raw.githubusercontent.com/akbooer/EventWatcher/master/icons/EventWatcher.png",
 	"Tabs": [
 		{
 			"Label": {

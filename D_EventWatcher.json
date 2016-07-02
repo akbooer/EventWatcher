@@ -1,6 +1,6 @@
 {
-    "flashicon": "icons\/EventWatcher.png",
-    "default_icon": "EventWatcher.png",
+    "flashicon": "http://raw.githubusercontent.com/akbooer/EventWatcher/master/icons/EventWatcher.png",
+    "default_icon": "http://raw.githubusercontent.com/akbooer/EventWatcher/master/icons/EventWatcher.png",
 	"Tabs": [
 		{
 			"Label": {

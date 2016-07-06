@@ -452,14 +452,44 @@
 					"lang_tag": "geochart",
 					"text": "<a href='/port_3480/data_request?id=lr_EventWatcher&report=geochart' target='_blank'>Where am I?</a>"
 				},
-				"top": "3",
+				"top": "4",
 				"Display": {
 					"Top": 80,
 					"Left": 390,
 					"Width": 220,
 					"Height": 20
 				}
-			}
+			},
+				{
+					"ControlGroup":"5",
+					"ControlType": "variable",
+					"top": "4",
+					"left": "0",
+					"Display": {
+						"Service": "urn:akbooer-com:serviceId:EventWatcher1",
+						"Variable": "Version",
+						"Top": 120,
+						"Left": 390,
+						"Width": 75,
+						"Height": 20
+					}
+				},
+				{
+					"ControlGroup":"5",
+					"ControlType": "label",
+					"top": "5",
+					"left": "0",
+					"Label": {
+						"lang_tag": "donate",
+						"text": "<a href='https:\/\/www.justgiving.com\/DataYours\/' target='_blank'>DONATE to Cancer Research UK</a>"
+					},
+					"Display": {
+						"Top": 160,
+						"Left": 390,
+						"Width": 75,
+						"Height": 20
+					}
+				}
 			]
 		},
 		{
@@ -483,124 +513,6 @@
 			"Function": "device_notifications"
 		}
 	],
-"eventList2": [
-        {
-            "id": 1,
-            "label": {
-                "lang_tag": "error_led_on_or_off",
-                "text": "Error LED is on or off"
-            },
-            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
-	    "norepeat": "1",
-            "argumentList": [
-               {
-                    "id": 1,
-                    "dataType": "boolean",
-                    "defaultValue": "1",
-                    "allowedValueList": [
-                        {
-                            "Off": "0",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_error_led_off",
-                                "text": "Error LED is off"
-                            }
-                        },
-                        {
-                            "On": "255",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_error_led_on",
-                                "text": "Error LED is on"
-                            }
-                        }
-                    ],
-                    "name": "ErrorLED",
-                    "comparisson": "=",
-                    "prefix": {
-                        "lang_tag": "on_or_off",
-                        "text": "On or Off"
-                    },
-                    "suffix": {}
-                }
-             ]
-        },
-        {
-            "id": 2,
-            "label": {
-                "lang_tag": "network_led_on_or_off",
-                "text": "Network LED is on or off"
-            },
-            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
-	    "norepeat": "1",
-            "argumentList": [
-               {
-                    "id": 1,
-                    "dataType": "boolean",
-                    "defaultValue": "1",
-                    "allowedValueList": [
-                        {
-                            "Off": "0",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_network_led_off",
-                                "text": "Network LED is off"
-                            }
-                        },
-                        {
-                            "On": "255",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_network_led_on",
-                                "text": "Network LED is on"
-                            }
-                        }
-                    ],
-                    "name": "NetworkLED",
-                    "comparisson": "=",
-                    "prefix": {
-                        "lang_tag": "on_or_off",
-                        "text": "On or Off"
-                    },
-                    "suffix": {}
-                }
-             ]
-        },
-        {
-            "id": 3,
-            "label": {
-                "lang_tag": "zwave_led_on_or_off",
-                "text": "Zwave LED is on or off"
-            },
-            "serviceId": "urn:akbooer-com:serviceId:EventWatcher1",
-	    "norepeat": "1",
-            "argumentList": [
-               {
-                    "id": 1,
-                    "dataType": "boolean",
-                    "defaultValue": "1",
-                    "allowedValueList": [
-                        {
-                            "Off": "0",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_zwave_led_off",
-                                "text": "Zwave LED is off"
-                            }
-                        },
-                        {
-                            "On": "255",
-                            "HumanFriendlyText": {
-                                "lang_tag": "hft_zwave_led_on",
-                                "text": "Zwave LED is on"
-                            }
-                        }
-                    ],
-                    "name": "ZwaveLED",
-                    "comparisson": "=",
-                    "prefix": {
-                        "lang_tag": "on_or_off",
-                        "text": "On or Off"
-                    },
-                    "suffix": {}
-                }
-             ]
-        }
-   ],
+	"eventList2": [],
 	"DeviceType": "urn:akbooer-com:device:EventWatcher:1"
 }

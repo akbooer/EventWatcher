@@ -1,6 +1,6 @@
 local ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2016.07.01",
+  VERSION       = "2016.07.06",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
   COPYRIGHT     = "(c) 2013-2016 AKBooer",
@@ -25,6 +25,7 @@ local ABOUT = {
 --             see: http://forum.micasaverde.com/index.php/topic,37627.0.html
 --             ALSO, extra door and HVAC watches (suggested by @johnes)
 --             see: http://forum.micasaverde.com/index.php/topic,37514.0.html
+-- 2016.07.06  modified version numbering (for AltAppStore)
 
 --[[
 UI5:
@@ -1296,7 +1297,13 @@ end
 
 function init (lul_device)
 	log 'starting...'
-	set ('Version', ABOUT.VERSION: sub(3,-1))							-- save code version number in UI variable
+  
+  do -- version number
+    local y,m,d = ABOUT.VERSION:match "(%d+)%D+(%d+)%D+(%d+)"
+    local version = ("%d.%d.%d"): format (y%2000,m,d)
+    set ('Version', version)
+  end
+  
   set ('LuupRestart', os.date("%d-%b-%Y %X", LuupRestart))
 
   local uptime = ((getSystemFile "/proc/uptime"): match "%d+") or LuupRestart

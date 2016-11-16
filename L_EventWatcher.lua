@@ -1,6 +1,6 @@
-local ABOUT = {
+ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2016.11.08",
+  VERSION       = "2016.11.16",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
   COPYRIGHT     = "(c) 2013-2016 AKBooer",
@@ -27,6 +27,7 @@ local ABOUT = {
 --             see: http://forum.micasaverde.com/index.php/topic,37514.0.html
 -- 2016.07.06  modified version numbering (for AltAppStore)
 -- 2016.11.08  added Luup Uptime (in days) to device variables
+-- 2016.11.16  make ABOUT global, for openLuup Plugin version number
 
 --[[
 UI5:

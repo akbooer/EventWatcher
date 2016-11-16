@@ -28,6 +28,7 @@ ABOUT = {
 -- 2016.07.06  modified version numbering (for AltAppStore)
 -- 2016.11.08  added Luup Uptime (in days) to device variables
 -- 2016.11.16  make ABOUT global, for openLuup Plugin version number
+-- 2016.11.17  work-around for weird startup crash?
 
 --[[
 UI5:
@@ -1153,8 +1154,9 @@ local function start_watch_service ()
 	local selected = {}
 	local excluded = {}
 	
+  log ("number of defined classes: " .. #classes)
 	for i = 0, #classes do     -- going from 0, so can't use ipairs
-	  local c = classes[i]
+	  local c = classes[i] or {}
 		selected[i] = c.symbol ~= "" and c.service and watchCategories:find (c.symbol) 		-- looking for these specific letters
 	end
 	watching = gviz.DataTable ()	

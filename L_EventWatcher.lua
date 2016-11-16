@@ -1,6 +1,6 @@
 ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2016.11.16",
+  VERSION       = "2016.11.17",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
   COPYRIGHT     = "(c) 2013-2016 AKBooer",

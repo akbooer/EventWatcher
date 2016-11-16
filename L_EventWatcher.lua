@@ -1,6 +1,6 @@
-local ABOUT = {
+ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2016.07.06",
+  VERSION       = "2016.11.16",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
   COPYRIGHT     = "(c) 2013-2016 AKBooer",
@@ -26,6 +26,8 @@ local ABOUT = {
 --             ALSO, extra door and HVAC watches (suggested by @johnes)
 --             see: http://forum.micasaverde.com/index.php/topic,37514.0.html
 -- 2016.07.06  modified version numbering (for AltAppStore)
+-- 2016.11.08  added Luup Uptime (in days) to device variables
+-- 2016.11.16  make ABOUT global, for openLuup Plugin version number
 
 --[[
 UI5:
@@ -1207,8 +1209,9 @@ function sysinfoPulse ()
 	luup.call_delay ('sysinfoPulse', systemPollMinutes * 60, "")						-- revisit every X minutes
 	local systemInfo, now = getSysinfo() 	-- useful info
   local AppMemoryUsed =  math.floor(collectgarbage "count")           -- EventWatcher's own memory usage in kB
-
+  local up = (now - LuupRestart) / (24 * 60 * 60)
 	local mem, cpu, free
+  
 	if systemInfo.MemAvail and systemInfo.cpuLoad05 then	
 		mem, cpu, free = systemInfo.MemAvail.val, systemInfo.cpuLoad05.val, systemInfo.MemFree.val
 		historyID = historyID % math.floor(24 * 60 / systemPollMinutes) + 1       -- 24 hours worth of history for these plots
@@ -1225,6 +1228,7 @@ function sysinfoPulse ()
   set ("MemAvail",  mem)
   set ("MemFree",  free)
 	set ("CpuLoad05", cpu)
+  set ("Uptime", up - up % 0.01)
 
 --  local LED = systemInfo.VeraLiteLEDS.val
 --	set ("VeraLiteLEDS", LED)	
@@ -1302,6 +1306,7 @@ function init (lul_device)
     local y,m,d = ABOUT.VERSION:match "(%d+)%D+(%d+)%D+(%d+)"
     local version = ("%d.%d.%d"): format (y%2000,m,d)
     set ('Version', version)
+    log (version)
   end
   
   set ('LuupRestart', os.date("%d-%b-%Y %X", LuupRestart))

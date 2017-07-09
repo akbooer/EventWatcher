@@ -1,6 +1,6 @@
 ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2016.11.17",
+  VERSION       = "2017.07.09",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
   COPYRIGHT     = "(c) 2013-2016 AKBooer",
@@ -29,6 +29,8 @@ ABOUT = {
 -- 2016.11.08  added Luup Uptime (in days) to device variables
 -- 2016.11.16  make ABOUT global, for openLuup Plugin version number
 -- 2016.11.17  work-around for weird startup crash?
+
+-- 2017.07.09  fix error in dns lookup call (thanks @samyoue)
 
 --[[
 UI5:
@@ -1289,7 +1291,7 @@ local function dns_translate (addr)
     if a: match (numeric) then
       info = addr                 -- all numeric, return unchanged
     else
-      local ip, msg = socket.dns.toip
+      local ip, msg = socket.dns.toip (a)   -- 2017.07.09 
       if ip then
         info = ip .. ':' .. port
       else

@@ -1,9 +1,9 @@
 ABOUT = {
   NAME          = "EventWatcher",
-  VERSION       = "2017.07.09",
+  VERSION       = "2018.03.04",
   DESCRIPTION   = "EventWatcher - variable and event reporting",
   AUTHOR        = "@akbooer",
-  COPYRIGHT     = "(c) 2013-2016 AKBooer",
+  COPYRIGHT     = "(c) 2013-2018 AKBooer",
   DOCUMENTATION = "https://github.com/akbooer/EventWatcher",
 }
 
@@ -31,6 +31,10 @@ ABOUT = {
 -- 2016.11.17  work-around for weird startup crash?
 
 -- 2017.07.09  fix error in dns lookup call (thanks @samyoue)
+-- 2017.12.11  add option to include service name in reported variable name (for @kartcon)
+
+-- 2018.03.04  use /port_3480 exclusively (Vera now shut down :3480 direct access)
+
 
 --[[
 UI5:
@@ -111,6 +115,7 @@ local watchedDevice = {}    -- table of watched device numbers
 
 local Server                -- HTTPS Alternate Event Server Server socket
 local syslog                -- syslog server
+local AddServiceName        -- == '1' for add service to logged variable name
 
 ------------------------------------------------------------------------
 --
@@ -233,8 +238,10 @@ end
 
 -- blog watched variables
 --function watchBlog (lul_device, lul_service, lul_variable, lul_value_old, lul_value_new)
-function watchBlog (lul_device, _, lul_variable, _, lul_value_new)
-	event (nil, lul_device, lul_variable, lul_value_new) 
+function watchBlog (lul_device, lul_service, lul_variable, _, lul_value_new)
+  local name = lul_variable
+  if AddServiceName then name = (lul_service:match "%w+$" or '?') .. '.' .. name end
+	event (nil, lul_device, name, lul_value_new) 
 end
 
 
@@ -715,7 +722,7 @@ local function sceneInfo (sceneNo)
 	end
 	
 	-- sceneInfo()
-	local code, s = luup.inet.wget("http://127.0.0.1:3480/data_request?id=scene&action=list&scene=" .. sceneNo)
+	local code, s = luup.inet.wget("http://127.0.0.1/port_3480/data_request?id=scene&action=list&scene=" .. sceneNo)
 	if s == "ERROR" then log ("WGET error code: "..(code or '?')) return end		
 	s = json.decode(s)
 	s.triggers = trigger_devices (s.triggers)		-- restructure scenes and trigger to simple sorted, lists
@@ -1332,7 +1339,8 @@ function init (lul_device)
   debugOn                 = uiVar ("Debug", "0") ~= "0"
   extrasFile              = uiVar ("ExtraVariablesFile",   "")     -- list of extra variables to watch
   excludeFile             = uiVar ("ExcludeVariablesFile", "")     -- list of extra variables to exclude
-      
+  AddServiceName          = uiVar ("AddServiceName", "0") == "1"
+  
 --	gviz.setKey "|itsd>#iuuqt;00xxx/hpphmf/dpn0ktbqj#|ttfuPoMpbeDbmmcbdl|eEbubUbcmf|xDibsuXsbqqfs|uuzqf>#ufyu0kbwbtdsjqu#|hhpphmf|wwjtvbmj{bujpo"
 
 	log 'defining CLI...'
